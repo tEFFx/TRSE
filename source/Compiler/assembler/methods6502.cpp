@@ -1935,7 +1935,8 @@ void Methods6502::EnableRasterIRQ(Assembler* as)
     as->Asm("lda $d01a");
     as->Asm("ora #$01");
     as->Asm("sta $d01a");
-    as->Asm("lda #$1B");
+    as->Asm("lda $d011");
+    as->Asm("and #$7f");
     as->Asm("sta $d011");
 }
 
