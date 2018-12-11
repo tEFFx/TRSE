@@ -45,10 +45,16 @@ void SidFile::Load(QString filename, QString path)
     if (!(m_blob.at(0)=='P' && m_blob.at(1)=='S' && m_blob.at(2)=='I' && m_blob.at(3)=='D'))
         ErrorHandler::e.Error("File '" + filename +"' not identified as a SID file");
 
-    m_loadAddress = m_blob.at(8)<<8 | m_blob.at(8+1)<<0;
-    m_initAddress = m_blob.at(0xa)<<8 | m_blob.at(0xa+1)<<0;
-    m_playAddress = m_blob.at(0xc)<<8 | m_blob.at(0xc+1)<<0;
-
+    //If load address is empty, use first two bytes from song data instead
+    if(m_blob.at(8) == 0 && m_blob.at(8+1) == 0) {
+        unsigned short dataOffset = m_blob.at(6)<<8 | m_blob.at(6+1)<<0;
+        //Song data use little endian
+        m_loadAddress = (unsigned char)m_blob.at(dataOffset+1)<<8 | (unsigned char)m_blob.at(dataOffset)<<0;
+    } else {
+        m_loadAddress = (unsigned char)m_blob.at(8)<<8 | (unsigned char)m_blob.at(8+1)<<0;
+    }
+    m_initAddress = (unsigned char)m_blob.at(0xa)<<8 | (unsigned char)m_blob.at(0xa+1)<<0;
+    m_playAddress = (unsigned char)m_blob.at(0xc)<<8 | (unsigned char)m_blob.at(0xc+1)<<0;
 
     file.close();
 }
